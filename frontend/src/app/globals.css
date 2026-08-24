@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── IntelliFlow Design Tokens (Phase 1) ─────────────── */
+:root {
+  /* Paper studio canvas */
+  --canvas: #f3ece1;
+  --canvas-subtle: #e9e0d3;
+  --cream: #faf6ef;
+  --well: #241f1a;
+
+  /* Ink */
+  --ink: #1c1814;
+  --ink-muted: #6b6358;
+  --ink-faint: #8f877c;
+  --cream-muted: #cfc6b8;
+
+  /* Signature: kiln / cinnabar — not SaaS blue */
+  --signal: #c6452a;
+  --signal-hover: #a83822;
+  --signal-subtle: rgba(198, 69, 42, 0.12);
+
+  /* Structural rules */
+  --rule: rgba(28, 24, 20, 0.16);
+  --rule-strong: rgba(28, 24, 20, 0.28);
+  --rule-on-ink: rgba(250, 246, 239, 0.14);
+
+  /* Agent roles (tokens only; canvas redesign is later) */
+  --role-planner: #2f5d8c;
+  --role-researcher: #c4841d;
+  --role-analyst: #2f7a5b;
+  --role-writer: #6b4c9a;
+  --role-reviewer: #a33d6b;
+
+  --background: var(--canvas);
+  --foreground: var(--ink);
+  --panel: var(--cream);
+  --panel-border: var(--rule);
+
+  --ease-studio: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --duration-fast: 140ms;
+  --duration-med: 220ms;
+}
+
+/* ── Base ────────────────────────────────────────────── */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans), "IBM Plex Sans", "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-image:
+    linear-gradient(rgba(28, 24, 20, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(28, 24, 20, 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-position: -1px -1px;
+}
+
+::selection {
+  background: var(--signal-subtle);
+  color: var(--ink);
+}
+
+/* ── Scrollbar ───────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(28, 24, 20, 0.22);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(28, 24, 20, 0.38);
+}
+
+.if-well::-webkit-scrollbar-thumb {
+  background: rgba(250, 246, 239, 0.18);
+}
+
+.if-well::-webkit-scrollbar-thumb:hover {
+  background: rgba(250, 246, 239, 0.32);
+}
+
+/* ── Motion (CSS only) ───────────────────────────────── */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ifPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.animate-in-subtle {
+  animation: fadeIn var(--duration-med) var(--ease-studio) forwards;
+}
+
+.if-pulse {
+  animation: ifPulse 1.6s var(--ease-studio) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-in-subtle,
+  .if-pulse {
+    animation: none;
+  }
+}
+
+/* ── Focus ───────────────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}

@@ -1,0 +1,69 @@
+# ─────────────────────────────────────────────
+#  IntelliFlow — .gitignore
+# ─────────────────────────────────────────────
+
+# ── OS ───────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDE / Editors ────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*.iml
+
+# ── Node / Next.js ───────────────────────────
+node_modules/
+.next/
+.vercel/
+out/
+dist/
+build/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.npm/
+
+# ── Environment variables ─────────────────────
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ── Python ───────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+ENV/
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# ── Jupyter ───────────────────────────────────
+.ipynb_checkpoints/
+
+# ── Misc ─────────────────────────────────────
+*.bak
+*.tmp
+*.orig

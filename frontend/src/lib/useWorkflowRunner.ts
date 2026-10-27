@@ -173,7 +173,7 @@ export function useWorkflowRunner({
           title: response.title,
           objective: response.objective,
           status: response.status,
-          activeStage: response.activeStage || "Execution Certified",
+          activeStage: response.activeStage || "Mission Completed",
           elapsedTime: response.elapsedTime,
           totalTokens: response.totalTokens,
           confidenceScore: response.confidenceScore,

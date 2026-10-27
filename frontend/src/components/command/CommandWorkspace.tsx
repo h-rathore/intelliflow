@@ -82,6 +82,10 @@ export function CommandWorkspace() {
 
   const selectedAgent = agents[selectedAgentRole];
   const isComplete = currentStageIndex >= totalStages - 1;
+  const isFailed = taskContext.status === "failed";
+  const sections = taskContext.draftArtifact?.sections ?? [];
+  const isArtifactVerified =
+    sections.length > 0 && sections.every((s) => s.status === "verified");
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-12">
@@ -340,9 +344,25 @@ export function CommandWorkspace() {
                 </span>
               </div>
 
-              <Badge variant={isComplete ? "success" : "accent"} size="sm" dot>
-                {isComplete ? "Execution Certified" : `Stage ${currentStageIndex + 1} of ${totalStages}`}
-              </Badge>
+              {isFailed ? (
+                <Badge variant="error" size="sm" dot>
+                  Execution Failed
+                </Badge>
+              ) : isComplete ? (
+                isArtifactVerified ? (
+                  <Badge variant="success" size="sm" dot>
+                    Execution Certified
+                  </Badge>
+                ) : (
+                  <Badge variant="warning" size="sm" dot>
+                    Execution Completed — Draft Unverified
+                  </Badge>
+                )
+              ) : (
+                <Badge variant="accent" size="sm" dot>
+                  {`Stage ${currentStageIndex + 1} of ${totalStages}`}
+                </Badge>
+              )}
             </div>
           </div>
 

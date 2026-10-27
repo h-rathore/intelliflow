@@ -181,3 +181,37 @@ def test_cors_headers_support_frontend_origins(client: TestClient):
         )
         assert resp.status_code == 200
         assert resp.headers.get("access-control-allow-origin") == origin
+
+
+def test_failed_workflow_retrieval_status_remains_failed(client: TestClient):
+    """Verify that a failed workflow maintains its 'failed' status and failure stage when retrieved via API."""
+    import asyncio
+    import uuid
+    from app.db.models import WorkflowRecord
+    from app.db.session import async_session_factory
+
+    fail_id = f"wf-failed-{uuid.uuid4().hex[:8]}"
+
+    async def seed_failed():
+        async with async_session_factory() as session:
+            record = WorkflowRecord(
+                id=fail_id,
+                title="Failed Workflow Task",
+                goal_prompt="Attempting unreachable pipeline task",
+                status="failed",
+                active_stage="Failed at researcher: Connection timed out",
+                elapsed_time="00m 02s",
+                total_tokens=150,
+                confidence_score=0.0,
+            )
+            session.add(record)
+            await session.commit()
+
+    asyncio.run(seed_failed())
+
+    resp = client.get(f"/api/v1/workflows/{fail_id}")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["id"] == fail_id
+    assert data["status"] == "failed"
+    assert "Failed at researcher" in data["activeStage"]

@@ -20,6 +20,7 @@ def setup_logging(debug: bool = False) -> None:
     # Quieten noisy third-party loggers
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
     logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("aiosqlite").setLevel(logging.WARNING)
 
 
 logger = logging.getLogger("intelliflow")

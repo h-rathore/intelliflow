@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1 import api_router
 from app.core.config import settings
 from app.core.logging import logger, setup_logging
+from app.db import engine, init_db
 
 
 @asynccontextmanager
@@ -23,8 +24,13 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         settings.app_version,
         settings.app_env,
     )
+    # Initialize database tables idempotently on startup
+    await init_db()
+    logger.info("Database initialized at %s", settings.database_url)
     yield
+    await engine.dispose()
     logger.info("Shutting down %s", settings.app_name)
+
 
 
 def create_app() -> FastAPI:

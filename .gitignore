@@ -63,6 +63,13 @@ htmlcov/
 # ── Jupyter ───────────────────────────────────
 .ipynb_checkpoints/
 
+# ── Databases ──────────────────────────────────
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
 # ── Misc ─────────────────────────────────────
 *.bak
 *.tmp

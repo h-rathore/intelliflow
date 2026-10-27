@@ -26,7 +26,15 @@ class Settings(BaseSettings):
     port: int = 8000
 
     # ── CORS ──────────────────────────────────────────────
-    cors_origins: list[str] = ["http://localhost:3000"]
+    cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+
+    # ── Persistence ───────────────────────────────────────
+    database_url: str = "sqlite+aiosqlite:///./intelliflow.db"
+
+    # ── AI Model Provider & Orchestration ─────────────────
+    llm_provider: str = "mock_fallback"
+    gemini_api_key: str | None = None
+    execution_timeout_seconds: int = 60
 
 
 # Singleton instance — import this everywhere

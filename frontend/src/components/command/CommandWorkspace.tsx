@@ -71,7 +71,7 @@ export function CommandWorkspace() {
     const target = textToRun || promptInput;
     if (!target.trim()) return;
 
-    startTask(target);
+    startTask(target, executionMode, selectedModel);
     setIsWorkspaceActive(true);
   };
 

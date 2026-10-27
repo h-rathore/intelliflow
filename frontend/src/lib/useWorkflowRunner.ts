@@ -1,18 +1,78 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import {
   AgentRole,
   AgentWorkforceMember,
   ActivityEvent,
   TaskContextData,
-  WorkflowStageStep,
 } from "@/types/workforce";
 import { INITIAL_AGENTS, INITIAL_TASK_CONTEXT } from "@/mock/workforceData";
+import { createWorkflow } from "@/lib/api";
 
 interface UseWorkflowRunnerProps {
   customTaskPrompt?: string;
   onComplete?: () => void;
+}
+
+const TOTAL_PIPELINE_STAGES = 5;
+
+function formatElapsed(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${String(mins).padStart(2, "0")}m ${String(secs).padStart(2, "0")}s`;
+}
+
+function createInFlightAgents(
+  baseAgents: Record<AgentRole, AgentWorkforceMember>
+): Record<AgentRole, AgentWorkforceMember> {
+  return {
+    planner: {
+      ...baseAgents.planner,
+      state: "working",
+      stateDescription: "Deconstructing prompt and synthesizing DAG execution plan...",
+      progressPercent: 20,
+      activeTool: "dag_optimizer",
+      currentThought: "Parsing mission requirements and decomposing into agent pipeline...",
+      outputSnippet: undefined,
+    },
+    researcher: {
+      ...baseAgents.researcher,
+      state: "waiting",
+      stateDescription: "Standing by for target research domains from Planner...",
+      progressPercent: 0,
+      activeTool: undefined,
+      currentThought: undefined,
+      outputSnippet: undefined,
+    },
+    analyst: {
+      ...baseAgents.analyst,
+      state: "waiting",
+      stateDescription: "Standing by for quantitative schema and research inputs...",
+      progressPercent: 0,
+      activeTool: undefined,
+      currentThought: undefined,
+      outputSnippet: undefined,
+    },
+    writer: {
+      ...baseAgents.writer,
+      state: "waiting",
+      stateDescription: "Standing by for evidence synthesis and analytical datasets...",
+      progressPercent: 0,
+      activeTool: undefined,
+      currentThought: undefined,
+      outputSnippet: undefined,
+    },
+    reviewer: {
+      ...baseAgents.reviewer,
+      state: "waiting",
+      stateDescription: "Standing by for compiled report and citation audit...",
+      progressPercent: 0,
+      activeTool: undefined,
+      currentThought: undefined,
+      outputSnippet: undefined,
+    },
+  };
 }
 
 export function useWorkflowRunner({
@@ -25,310 +85,168 @@ export function useWorkflowRunner({
   const [activityEvents, setActivityEvents] = useState<ActivityEvent[]>([]);
   const [taskContext, setTaskContext] = useState<TaskContextData>(INITIAL_TASK_CONTEXT);
 
-  // Dynamic simulation stages generator based on the active prompt
-  const generateStages = useCallback((promptText: string): WorkflowStageStep[] => {
-    const taskTitle = promptText || INITIAL_TASK_CONTEXT.title;
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const elapsedSecondsRef = useRef<number>(0);
 
-    return [
-      {
-        stepIndex: 0,
-        stageName: "Stage 1: Intent Deconstruction & DAG Planning",
-        elapsedTime: "00m 45s",
-        agentStates: {
-          planner: {
-            state: "thinking",
-            stateDescription: "Synthesizing execution graph & identifying required tool pipelines",
-            activeTool: "dag_optimizer",
-            currentThought: `Deconstructing prompt: "${taskTitle.slice(0, 60)}..." into parallel sub-tasks.`,
-            outputSnippet: "Isolated 4 required sub-tasks: Domain discovery, metric correlation, compilation, verification.",
-            progressPercent: 45,
-          },
-          researcher: {
-            state: "waiting",
-            stateDescription: "Standing by for target domain list from Architect",
-            progressPercent: 0,
-          },
-          analyst: {
-            state: "waiting",
-            stateDescription: "Standing by for quantitative schema from Architect",
-            progressPercent: 0,
-          },
-          writer: {
-            state: "waiting",
-            stateDescription: "Standing by for research datasets",
-            progressPercent: 0,
-          },
-          reviewer: {
-            state: "waiting",
-            stateDescription: "Standing by for draft compilation",
-            progressPercent: 0,
-          },
-        },
-        newEvents: [
-          {
-            id: `ev-init-1`,
-            timestamp: new Date().toLocaleTimeString([], { hour12: false }),
-            agentRole: "planner",
-            agentName: "Architect (PL-01)",
-            message: `Deconstructing mission: "${taskTitle.slice(0, 60)}..."`,
-            type: "plan",
-          },
-        ],
-      },
-      {
-        stepIndex: 1,
-        stageName: "Stage 2: Parallel Discovery & Quantitative Analysis",
-        elapsedTime: "02m 30s",
-        agentStates: {
-          planner: {
-            state: "completed",
-            stateDescription: "Execution plan validated and dispatched to worker nodes",
-            activeTool: "dag_optimizer",
-            outputSnippet: "Dispatched parallel crawl triggers to Scout and Synthesizer.",
-            progressPercent: 100,
-          },
-          researcher: {
-            state: "working",
-            stateDescription: "Crawling whitepapers, product documentation & market filings",
-            activeTool: "deep_web_crawler",
-            currentThought: "Ingesting Q3 2025 release notes and enterprise pricing tiers across target entities.",
-            outputSnippet: "Discovered 18 verified sources; parsed pricing tables and ARR benchmarks.",
-            progressPercent: 72,
-          },
-          analyst: {
-            state: "working",
-            stateDescription: "Cross-correlating company market caps, moat strength, and autonomy scores",
-            activeTool: "python_matrix_repl",
-            currentThought: "Computing competitive positioning index: UI-based vs. API-first orchestration.",
-            outputSnippet: "Matrix parsed: 4 leaders identified, 6 challengers, 4 niche vertical AI platforms.",
-            progressPercent: 60,
-          },
-          writer: {
-            state: "waiting",
-            stateDescription: "Waiting for Scout & Synthesizer to complete benchmark datasets",
-            progressPercent: 0,
-          },
-          reviewer: {
-            state: "waiting",
-            stateDescription: "Standing by for draft compilation",
-            progressPercent: 0,
-          },
-        },
-        newEvents: [
-          {
-            id: `ev-stage2-1`,
-            timestamp: new Date().toLocaleTimeString([], { hour12: false }),
-            agentRole: "planner",
-            agentName: "Architect (PL-01)",
-            message: "Dispatched concurrent workflows to Scout (Research) and Synthesizer (Analytics)",
-            type: "plan",
-          },
-          {
-            id: `ev-stage2-2`,
-            timestamp: new Date().toLocaleTimeString([], { hour12: false }),
-            agentRole: "researcher",
-            agentName: "Scout (RS-02)",
-            message: "Discovered 18 primary sources, pricing tables, and API documentation",
-            type: "discovery",
-          },
-          {
-            id: `ev-stage2-3`,
-            timestamp: new Date().toLocaleTimeString([], { hour12: false }),
-            agentRole: "analyst",
-            agentName: "Synthesizer (AN-03)",
-            message: "Generated comparative matrix comparing latency, throughput, and moat strength",
-            type: "synthesis",
-          },
-        ],
-      },
-      {
-        stepIndex: 2,
-        stageName: "Stage 3: Document Compilation & Section Synthesis",
-        elapsedTime: "04m 45s",
-        agentStates: {
-          planner: { state: "completed", stateDescription: "Plan complete", progressPercent: 100 },
-          researcher: {
-            state: "completed",
-            stateDescription: "Completed data discovery (24 sources ingested)",
-            outputSnippet: "Finalized feature dataset & benchmark references.",
-            progressPercent: 100,
-          },
-          analyst: {
-            state: "completed",
-            stateDescription: "Completed capability matrix & quantitative scoring",
-            outputSnippet: "Scored 14 platforms across 6 architectural dimensions.",
-            progressPercent: 100,
-          },
-          writer: {
-            state: "working",
-            stateDescription: "Compiling structured briefing and executive summary",
-            activeTool: "markdown_compiler",
-            currentThought: "Synthesizing Section 3 & 4 with embedded comparison tables and citations.",
-            outputSnippet: "Generated 2,400 words of structured analysis across 4 key dimensions.",
-            progressPercent: 85,
-          },
-          reviewer: {
-            state: "waiting",
-            stateDescription: "Standing by for draft compilation from Scribe",
-            progressPercent: 20,
-          },
-        },
-        newEvents: [
-          {
-            id: `ev-stage3-1`,
-            timestamp: new Date().toLocaleTimeString([], { hour12: false }),
-            agentRole: "writer",
-            agentName: "Scribe (WR-04)",
-            message: "Ingested verified datasets from Scout & Synthesizer; compiled Sections 1-4",
-            type: "draft",
-          },
-        ],
-      },
-      {
-        stepIndex: 3,
-        stageName: "Stage 4: Fact Verification & Citation Certification",
-        elapsedTime: "06m 15s",
-        agentStates: {
-          planner: { state: "completed", stateDescription: "Plan complete", progressPercent: 100 },
-          researcher: { state: "completed", stateDescription: "Research complete", progressPercent: 100 },
-          analyst: { state: "completed", stateDescription: "Analysis complete", progressPercent: 100 },
-          writer: {
-            state: "completed",
-            stateDescription: "Draft compiled (3,200 words, 4 tables)",
-            outputSnippet: "Transmitted full draft to Validator for verification.",
-            progressPercent: 100,
-          },
-          reviewer: {
-            state: "completed",
-            stateDescription: "Verification passed (100% verified citations, zero hallucinations)",
-            activeTool: "fact_checker",
-            outputSnippet: "Approved final briefing. Certified ready for production export.",
-            progressPercent: 100,
-          },
-        },
-        newEvents: [
-          {
-            id: `ev-stage4-1`,
-            timestamp: new Date().toLocaleTimeString([], { hour12: false }),
-            agentRole: "reviewer",
-            agentName: "Validator (RV-05)",
-            message: "Audit complete: 28/28 citations verified. Zero hallucinations detected. Document certified",
-            type: "critique",
-          },
-          {
-            id: `ev-stage4-2`,
-            timestamp: new Date().toLocaleTimeString([], { hour12: false }),
-            agentRole: "planner",
-            agentName: "Architect (PL-01)",
-            message: "Mission completed successfully across 5 collaborative agents",
-            type: "system",
-          },
-        ],
-      },
-    ];
+  const stopTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
   }, []);
 
-  const stagesRef = useRef<WorkflowStageStep[]>(generateStages(customTaskPrompt || ""));
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      stopTimer();
+    };
+  }, [stopTimer]);
 
-  // Initialize or start task
-  const startTask = useCallback((promptText: string) => {
-    const newStages = generateStages(promptText);
-    stagesRef.current = newStages;
+  const startTimer = useCallback(() => {
+    stopTimer();
+    elapsedSecondsRef.current = 0;
+    timerRef.current = setInterval(() => {
+      elapsedSecondsRef.current += 1;
+      const formatted = formatElapsed(elapsedSecondsRef.current);
+      setTaskContext((prev) => ({
+        ...prev,
+        elapsedTime: formatted,
+      }));
+    }, 1000);
+  }, [stopTimer]);
 
-    setTaskContext({
-      id: `task-${Date.now()}`,
-      title: promptText,
-      objective: `Execute collaborative multi-agent workflow: "${promptText}". Synthesize verified outputs across Planner, Researcher, Analyst, Writer, and Reviewer.`,
-      status: "in_progress",
-      activeStage: newStages[0].stageName || newStages[0].label || "Stage 1",
-      elapsedTime: "00m 01s",
-      totalTokens: 1450,
-      confidenceScore: 99.2,
-      draftArtifact: INITIAL_TASK_CONTEXT.draftArtifact,
-    });
+  const startTask = useCallback(
+    async (
+      promptText: string,
+      mode: "autonomous" | "step-by-step" = "autonomous",
+      model = "gemini-1.5-flash"
+    ) => {
+      const activePrompt = promptText || customTaskPrompt || INITIAL_TASK_CONTEXT.title;
 
-    setCurrentStageIndex(0);
-    applyStage(0, newStages);
-    setIsRunning(true);
-  }, [generateStages]);
+      // 1. Initial in-flight state
+      setIsRunning(true);
+      setCurrentStageIndex(0);
 
-  const applyStage = (stageIdx: number, stagesList = stagesRef.current) => {
-    const stage = stagesList[stageIdx];
-    if (!stage) return;
-
-    setAgents((prev) => {
-      const next = { ...prev };
-      (Object.keys(stage.agentStates) as AgentRole[]).forEach((role) => {
-        const stateUpdate = stage.agentStates[role];
-        next[role] = {
-          ...next[role],
-          ...stateUpdate,
-        };
+      setTaskContext({
+        id: "wf-init",
+        title: activePrompt,
+        objective: activePrompt,
+        status: "in_progress",
+        activeStage: "Stage 1: Intent Deconstruction & DAG Planning",
+        elapsedTime: "00m 00s",
+        totalTokens: 0,
+        confidenceScore: 0,
+        draftArtifact: {
+          title: activePrompt,
+          sections: [],
+        },
       });
-      return next;
-    });
 
-    if (stage.newEvents && stage.newEvents.length > 0) {
-      setActivityEvents((prev) => {
-        const existingIds = new Set(prev.map((e) => e.id));
-        const toAdd = stage.newEvents.filter((e) => !existingIds.has(e.id));
-        return [...prev, ...toAdd];
-      });
-    }
+      setAgents(createInFlightAgents(INITIAL_AGENTS));
 
-    setTaskContext((prev) => ({
-      ...prev,
-      elapsedTime: stage.elapsedTime,
-      status: stageIdx >= stagesList.length - 1 ? "completed" : "in_progress",
-      activeStage: stage.stageName || stage.label || prev.activeStage,
-      totalTokens: (stageIdx + 1) * 3400,
-    }));
-  };
+      setActivityEvents([
+        {
+          id: `ev-${Date.now()}-init`,
+          timestamp: new Date().toLocaleTimeString([], { hour12: false }),
+          agentRole: "planner",
+          agentName: "Architect (PL-01)",
+          message: `Dispatched multi-agent workflow to backend engine: "${activePrompt.slice(0, 60)}..."`,
+          type: "plan",
+        },
+      ]);
+
+      startTimer();
+
+      try {
+        // 2. Real backend execution call
+        const response = await createWorkflow({
+          goalPrompt: activePrompt,
+          executionMode: mode,
+          model: model,
+        });
+
+        stopTimer();
+
+        // 3. Render actual backend response
+        setTaskContext({
+          id: response.id,
+          title: response.title,
+          objective: response.objective,
+          status: response.status,
+          activeStage: response.activeStage || "Execution Certified",
+          elapsedTime: response.elapsedTime,
+          totalTokens: response.totalTokens,
+          confidenceScore: response.confidenceScore,
+          draftArtifact: response.draftArtifact,
+        });
+
+        if (response.agents) {
+          setAgents(response.agents as Record<AgentRole, AgentWorkforceMember>);
+        }
+
+        if (response.activityEvents && response.activityEvents.length > 0) {
+          setActivityEvents(response.activityEvents);
+        }
+
+        setCurrentStageIndex(TOTAL_PIPELINE_STAGES - 1);
+        setIsRunning(false);
+
+        if (onComplete) {
+          onComplete();
+        }
+      } catch (err: unknown) {
+        stopTimer();
+        const errorMessage =
+          err instanceof Error ? err.message : "Workflow execution failed";
+
+        setTaskContext((prev) => ({
+          ...prev,
+          status: "failed",
+          activeStage: "Execution Failed",
+        }));
+
+        setActivityEvents((prev) => [
+          ...prev,
+          {
+            id: `ev-${Date.now()}-err`,
+            timestamp: new Date().toLocaleTimeString([], { hour12: false }),
+            agentRole: "reviewer",
+            agentName: "System",
+            message: `Execution failed: ${errorMessage}`,
+            type: "system",
+          },
+        ]);
+
+        setIsRunning(false);
+      }
+    },
+    [customTaskPrompt, onComplete, startTimer, stopTimer]
+  );
 
   const stepForward = useCallback(() => {
-    const maxIdx = stagesRef.current.length - 1;
-    if (currentStageIndex < maxIdx) {
-      const nextIdx = currentStageIndex + 1;
-      setCurrentStageIndex(nextIdx);
-      applyStage(nextIdx);
-      if (nextIdx === maxIdx && onComplete) {
+    setCurrentStageIndex((prev) => {
+      const nextIdx = Math.min(TOTAL_PIPELINE_STAGES - 1, prev + 1);
+      if (nextIdx === TOTAL_PIPELINE_STAGES - 1 && onComplete) {
         onComplete();
       }
-    } else {
-      setIsRunning(false);
-    }
-  }, [currentStageIndex, onComplete]);
+      return nextIdx;
+    });
+  }, [onComplete]);
 
   const resetTask = useCallback(() => {
+    stopTimer();
     setIsRunning(false);
     setCurrentStageIndex(0);
     setAgents(INITIAL_AGENTS);
     setActivityEvents([]);
     setTaskContext(INITIAL_TASK_CONTEXT);
-  }, []);
-
-  // Timer auto-progression
-  useEffect(() => {
-    let timer: NodeJS.Timeout | undefined;
-    if (isRunning) {
-      timer = setInterval(() => {
-        if (currentStageIndex < stagesRef.current.length - 1) {
-          stepForward();
-        } else {
-          setIsRunning(false);
-        }
-      }, 4500);
-    }
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [isRunning, currentStageIndex, stepForward]);
+  }, [stopTimer]);
 
   return {
     isRunning,
     setIsRunning,
     currentStageIndex,
-    totalStages: stagesRef.current.length,
+    totalStages: TOTAL_PIPELINE_STAGES,
     agents,
     activityEvents,
     taskContext,

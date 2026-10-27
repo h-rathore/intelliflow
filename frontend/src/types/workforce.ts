@@ -44,7 +44,7 @@ export interface TaskContextData {
   id: string;
   title: string;
   objective: string;
-  status: "in_progress" | "completed" | "paused" | "idle";
+  status: "in_progress" | "completed" | "paused" | "idle" | "failed";
   activeStage: string;
   elapsedTime: string;
   totalTokens: number;
@@ -53,6 +53,39 @@ export interface TaskContextData {
     title: string;
     sections: TaskSection[];
   };
+}
+
+export interface WorkflowStatusResponse {
+  id: string;
+  title: string;
+  objective: string;
+  status: "in_progress" | "completed" | "paused" | "idle" | "failed";
+  activeStage: string;
+  elapsedTime: string;
+  totalTokens: number;
+  confidenceScore: number;
+  draftArtifact: {
+    title: string;
+    sections: TaskSection[];
+  };
+  agents?: Record<AgentRole, AgentWorkforceMember>;
+  activityEvents?: ActivityEvent[];
+}
+
+export interface WorkflowArtifactItem {
+  id: string;
+  workflowId: string;
+  title: string;
+  sections: TaskSection[];
+  markdownContent: string;
+  verifiedStatus: string;
+  createdAt: string | null;
+}
+
+export interface WorkflowArtifactsResponse {
+  workflowId: string;
+  artifacts: WorkflowArtifactItem[];
+  count: number;
 }
 
 export interface WorkflowStageStep {

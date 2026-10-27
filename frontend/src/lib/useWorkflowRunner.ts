@@ -205,6 +205,20 @@ export function useWorkflowRunner({
           activeStage: "Execution Failed",
         }));
 
+        setAgents((prev) => {
+          const updated = { ...prev };
+          for (const role of Object.keys(updated) as AgentRole[]) {
+            if (updated[role].state === "working") {
+              updated[role] = {
+                ...updated[role],
+                state: "failed",
+                stateDescription: `Execution interrupted: ${errorMessage}`,
+              };
+            }
+          }
+          return updated;
+        });
+
         setActivityEvents((prev) => [
           ...prev,
           {

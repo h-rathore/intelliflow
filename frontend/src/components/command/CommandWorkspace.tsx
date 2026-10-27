@@ -81,8 +81,8 @@ export function CommandWorkspace() {
   };
 
   const selectedAgent = agents[selectedAgentRole];
-  const isComplete = currentStageIndex >= totalStages - 1;
   const isFailed = taskContext.status === "failed";
+  const isComplete = !isFailed && (taskContext.status === "completed" || currentStageIndex >= totalStages - 1);
   const sections = taskContext.draftArtifact?.sections ?? [];
   const isArtifactVerified =
     sections.length > 0 && sections.every((s) => s.status === "verified");
@@ -297,7 +297,7 @@ export function CommandWorkspace() {
                 </Button>
 
                 <Button
-                  variant={isRunning ? "subtle" : "primary"}
+                  variant={isRunning ? "subtle" : isFailed ? "outline" : "primary"}
                   size="sm"
                   onClick={() => setIsRunning(!isRunning)}
                   icon={
@@ -308,7 +308,7 @@ export function CommandWorkspace() {
                     )
                   }
                 >
-                  {isRunning ? "Running..." : isComplete ? "Completed" : "Resume"}
+                  {isRunning ? "Running..." : isFailed ? "Failed" : isComplete ? "Completed" : "Resume"}
                 </Button>
 
                 <Button

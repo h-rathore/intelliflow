@@ -49,7 +49,12 @@ class WorkflowCreateRequest(BaseModel):
     """Request payload to initiate a multi-agent workflow."""
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
-    goal_prompt: str = Field(..., min_length=1, description="Natural language task or objective")
+    goal_prompt: str = Field(
+        ...,
+        min_length=1,
+        max_length=10000,
+        description="Natural language task or objective",
+    )
     execution_mode: str = Field(default="autonomous", description="Execution mode: autonomous or step-by-step")
     model: str = Field(default="gemini-1.5-flash", description="Target LLM identifier")
 

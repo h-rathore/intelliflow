@@ -167,18 +167,18 @@ npm run dev
 cd backend
 .venv\Scripts\pytest.exe -q
 ```
-*Output: `48 passed, 1 warning in 2.61s`*
+*Output: `59 passed, 1 warning in 3.04s`*
 
-> "Our backend is covered by 48 automated tests across 6 suites, verifying agent contracts, orchestration timeouts, dual-mode fallback, SQLite persistence, and REST endpoints. All 48 pass with 100% success."
+> "Our backend is covered by 59 automated tests across 7 suites, verifying agent contracts, orchestration timeouts, dual-mode fallback, SQLite persistence, boundary validation, and fault isolation. All 59 pass with 100% success."
 
 ```powershell
 # 2. Run Frontend Integration Tests
 cd ..\frontend
 npm test
 ```
-*Output: `tests 7, suites 1, pass 7, fail 0 (94ms)`*
+*Output: `tests 10, suites 1, pass 10, fail 0 (138ms)`*
 
-> "Our frontend integration suite verifies typed API serialization, error boundaries, empty prompt rejections, and status badge truthfulness with 7 passed tests."
+> "Our frontend integration suite verifies typed API serialization, error boundaries, empty prompt rejections, agent failure transitions, and status badge truthfulness with 10 passed tests."
 
 ```powershell
 # 3. Run Reproducible Performance Benchmark

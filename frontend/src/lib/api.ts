@@ -27,10 +27,22 @@ export async function apiFetch<T>(
   });
 
   if (!response.ok) {
-    const errorBody = await response.json().catch(() => ({}));
+    const errorBody = (await response.json().catch(() => ({}))) as {
+      detail?: string | Array<{ msg?: string }> | Record<string, unknown>;
+    };
+    let detailMsg: string | undefined;
+    if (typeof errorBody.detail === "string") {
+      detailMsg = errorBody.detail;
+    } else if (Array.isArray(errorBody.detail)) {
+      detailMsg = errorBody.detail
+        .map((d) => d.msg || JSON.stringify(d))
+        .join("; ");
+    } else if (errorBody.detail) {
+      detailMsg = JSON.stringify(errorBody.detail);
+    }
+
     throw new Error(
-      (errorBody as { detail?: string }).detail ??
-        `HTTP ${response.status}: ${response.statusText}`
+      detailMsg ?? `HTTP ${response.status}: ${response.statusText}`
     );
   }
 

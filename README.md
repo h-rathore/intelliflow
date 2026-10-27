@@ -10,8 +10,8 @@
 [![React 19](https://img.shields.io/badge/React-19.0-61DAFB.svg?logo=react&logoColor=black)](https://react.dev/)
 [![SQLite](https://img.shields.io/badge/SQLite-aiosqlite-003B57.svg?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
 [![Google Gemini](https://img.shields.io/badge/LLM-Gemini_1.5_Flash-4285F4.svg?logo=google&logoColor=white)](https://ai.google.dev/)
-[![Backend Tests](https://img.shields.io/badge/Pytest-48%20Passed-brightgreen.svg)](backend/tests/)
-[![Frontend Tests](https://img.shields.io/badge/Node_Test-7%20Passed-brightgreen.svg)](frontend/tests/)
+[![Backend Tests](https://img.shields.io/badge/Pytest-59%20Passed-brightgreen.svg)](backend/tests/)
+[![Frontend Tests](https://img.shields.io/badge/Node_Test-10%20Passed-brightgreen.svg)](frontend/tests/)
 
 </div>
 
@@ -299,8 +299,8 @@ The evaluation metrics below reflect actual, reproducible automated test runs an
 
 | Evaluation Category | Metric / Scope | Measured Result | Evaluation Status | Limitations & Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| **Backend Unit & Integration Tests** | `pytest -q` (6 test suites) | **48 passed** in 2.61s | **PASS (100%)** | Validates schema validation, persistence, agents, engine, API |
-| **Frontend Integration Tests** | `node --test tests/**/*.test.mjs` | **7 passed** in 94ms | **PASS (100%)** | Native Node.js test suite; tests API client, state mapping, error isolation |
+| **Backend Unit & Integration Tests** | `pytest tests/` (7 test suites) | **59 passed** in 3.04s | **PASS (100%)** | Validates schema validation, boundaries, persistence, agents, engine, API, fault isolation |
+| **Frontend Integration Tests** | `node --test tests/**/*.test.mjs` | **10 passed** in 138ms | **PASS (100%)** | Native Node.js test runner; validates typed API, agent failure transitions, 422 error parsing, truth-aware badges |
 | **Frontend Browser Smoke Test** | `node tests/browser-smoke.mjs` | **100% Passed** | **PASS** | Headless Chrome CDP smoke test; end-to-end task run verified |
 | **Python Code Hygiene** | `ruff check app tests` | **0 errors, 0 warnings** | **PASS** | Enforces PEP 8 compliance, import hygiene, and type sanity |
 | **TypeScript Type Checking** | `tsc --noEmit` | **0 type errors** | **PASS** | Strict mode type verification across all components |
@@ -402,7 +402,7 @@ npm run dev
 
 Execute these commands to reproduce the verified project baseline:
 
-### 1. Backend Pytest Suite (48 tests)
+### 1. Backend Pytest Suite (59 tests)
 ```powershell
 cd backend
 .venv\Scripts\pytest.exe -q
@@ -414,7 +414,7 @@ cd backend
 .venv\Scripts\ruff.exe check app tests
 ```
 
-### 3. Frontend Native Node Tests (7 tests)
+### 3. Frontend Native Node Tests (10 tests)
 ```powershell
 cd frontend
 npm test
@@ -483,7 +483,7 @@ intelliflow/
 │   │   ├── orchestration/     # Asynchronous WorkflowEngine
 │   │   ├── services/llm/      # Fallback engine & Gemini client
 │   │   └── main.py            # FastAPI application factory & lifespan
-│   ├── tests/                 # 48 pytest unit and integration tests
+│   ├── tests/                 # 59 pytest unit, integration, and reliability acceptance tests
 │   ├── .env.example           # Sanitized environment template
 │   ├── pyproject.toml         # Ruff & test configuration
 │   └── requirements.txt       # Python dependencies

@@ -29,7 +29,11 @@ class ReviewerAgent(BaseAgent):
         goal = str(context.get("goal_prompt") or context.get("goal") or "").strip()
         report_text = str(context.get("report_text") or context.get("markdown_full") or "")
         writer_data = context.get("writer_data", {})
+        if not isinstance(writer_data, dict):
+            writer_data = {}
         raw_sections = writer_data.get("sections", [])
+        if not isinstance(raw_sections, list):
+            raw_sections = []
 
         if not goal or not report_text:
             return AgentExecutionResult(
@@ -105,6 +109,8 @@ class ReviewerAgent(BaseAgent):
         # Update section statuses: keep drafted/pending if synthetic, verified only if genuine live verification
         verified_sections = []
         for s in raw_sections:
+            if not isinstance(s, dict):
+                continue
             sec_copy = dict(s)
             if is_approved and not is_synthetic:
                 sec_copy["status"] = SectionStatus.VERIFIED.value

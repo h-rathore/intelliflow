@@ -183,6 +183,36 @@ class WorkflowEngine:
                 await self._persist_workflow(failed_resp, execution_trace, None)
 
             return failed_resp
+        except Exception as exc:
+            elapsed = time.perf_counter() - start_perf
+            elapsed_str = self._format_elapsed(elapsed)
+            logger.error("Workflow %s failed with unhandled exception: %s", wf_id, str(exc), exc_info=True)
+
+            add_event(
+                role=AgentRole.PLANNER,
+                agent_name="Architect",
+                message=f"Pipeline aborted: {type(exc).__name__} - {str(exc)}",
+                event_type=ActivityEventType.SYSTEM,
+            )
+
+            failed_resp = WorkflowStatusResponse(
+                id=wf_id,
+                title=title,
+                objective=clean_goal,
+                status=WorkflowStatus.FAILED,
+                active_stage=f"Execution Failed: {type(exc).__name__}",
+                elapsed_time=elapsed_str,
+                total_tokens=sum(t.get("tokens_used", 0) for t in execution_trace),
+                confidence_score=0.0,
+                draft_artifact=DraftArtifact(title=f"Failed: {title}", sections=[]),
+                agents=agents_map,
+                activity_events=activity_events,
+            )
+
+            if persist:
+                await self._persist_workflow(failed_resp, execution_trace, None)
+
+            return failed_resp
 
     async def _execute_pipeline(
         self,
@@ -353,14 +383,26 @@ class WorkflowEngine:
         is_approved = bool(reviewer_res.data.get("is_approved", False))
 
         raw_sections = reviewer_res.data.get("verified_sections") or writer_res.data.get("sections") or []
+        if not isinstance(raw_sections, list):
+            raw_sections = []
         typed_sections: list[TaskSection] = []
+        valid_roles = {r.value: r for r in AgentRole}
+        valid_statuses = {st.value: st for st in SectionStatus}
+
         for s in raw_sections:
-            sec_status = SectionStatus(s.get("status", "drafted")) if s.get("status") in [e.value for e in SectionStatus] else SectionStatus.DRAFTED
+            if not isinstance(s, dict):
+                continue
+            role_val = s.get("contributorRole") or s.get("contributor_role") or "writer"
+            agent_role = valid_roles.get(role_val, AgentRole.WRITER)
+
+            status_val = s.get("status") or "drafted"
+            sec_status = valid_statuses.get(status_val, SectionStatus.DRAFTED)
+
             typed_sections.append(
                 TaskSection(
-                    heading=s.get("heading", "Untitled Section"),
-                    content=s.get("content", ""),
-                    contributor_role=AgentRole(s.get("contributorRole", "writer")),
+                    heading=str(s.get("heading") or "Untitled Section"),
+                    content=str(s.get("content") or ""),
+                    contributor_role=agent_role,
                     status=sec_status,
                 )
             )

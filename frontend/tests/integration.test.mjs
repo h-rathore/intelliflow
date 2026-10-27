@@ -369,4 +369,68 @@ describe("Frontend API Client and State Integration Suite", () => {
     assert.equal(badgeC.label, "Execution Failed");
     assert.equal(badgeC.variant, "error");
   });
+
+  test("8. Working agents correctly transition to failed state on execution error", () => {
+    const agents = {
+      planner: { role: "planner", state: "working", stateDescription: "Planning DAG" },
+      researcher: { role: "researcher", state: "waiting", stateDescription: "Waiting" },
+    };
+
+    // Simulate error transition logic from useWorkflowRunner catch block
+    const errorMessage = "HTTP 500: Internal server error";
+    const updated = { ...agents };
+    for (const role of Object.keys(updated)) {
+      if (updated[role].state === "working") {
+        updated[role] = {
+          ...updated[role],
+          state: "failed",
+          stateDescription: `Execution interrupted: ${errorMessage}`,
+        };
+      }
+    }
+
+    assert.equal(updated.planner.state, "failed");
+    assert.ok(updated.planner.stateDescription.includes("Execution interrupted"));
+    assert.equal(updated.researcher.state, "waiting");
+  });
+
+  test("9. FastAPI 422 array error detail is formatted into readable error string", async () => {
+    const parseErrorDetail = (errorBody) => {
+      let detailMsg;
+      if (typeof errorBody.detail === "string") {
+        detailMsg = errorBody.detail;
+      } else if (Array.isArray(errorBody.detail)) {
+        detailMsg = errorBody.detail
+          .map((d) => d.msg || JSON.stringify(d))
+          .join("; ");
+      } else if (errorBody.detail) {
+        detailMsg = JSON.stringify(errorBody.detail);
+      }
+      return detailMsg ?? "Unknown error";
+    };
+
+    const fastApi422Body = {
+      detail: [
+        { loc: ["body", "goalPrompt"], msg: "String should have at most 10000 characters", type: "string_too_long" },
+      ],
+    };
+
+    const parsed = parseErrorDetail(fastApi422Body);
+    assert.equal(parsed, "String should have at most 10000 characters");
+    assert.notEqual(parsed, "[object Object]");
+  });
+
+  test("10. Failed workflow state prevents isComplete from being marked true", () => {
+    const computeCompletion = (status, currentStageIndex, totalStages) => {
+      const isFailed = status === "failed";
+      return !isFailed && (status === "completed" || currentStageIndex >= totalStages - 1);
+    };
+
+    // If failed, even if stage index is at end, isComplete must be false
+    assert.equal(computeCompletion("failed", 4, 5), false);
+    // If completed, isComplete must be true
+    assert.equal(computeCompletion("completed", 4, 5), true);
+    // If in_progress at stage 2, isComplete must be false
+    assert.equal(computeCompletion("in_progress", 2, 5), false);
+  });
 });

@@ -109,13 +109,17 @@ class GeminiLLMClient(BaseLLMClient):
             },
         }
 
+        headers = {
+            "Content-Type": "application/json",
+            "x-goog-api-key": self.api_key,
+        }
+
         try:
             async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
                 res = await client.post(
                     endpoint,
-                    params={"key": self.api_key},
                     json=payload,
-                    headers={"Content-Type": "application/json"},
+                    headers=headers,
                 )
 
             if res.status_code == 200:
@@ -137,21 +141,26 @@ class GeminiLLMClient(BaseLLMClient):
                 )
 
             if res.status_code in (401, 403):
-                raise LLMAuthenticationError(f"Gemini authentication failed (HTTP {res.status_code}): {res.text}")
+                raise LLMAuthenticationError(f"Gemini authentication failed (HTTP {res.status_code})")
             elif res.status_code == 429:
-                raise LLMRateLimitError(f"Gemini rate limit or quota exceeded: {res.text}")
+                raise LLMRateLimitError("Gemini rate limit or quota exceeded (HTTP 429)")
             else:
-                raise LLMError(f"Gemini API returned HTTP {res.status_code}: {res.text}")
+                raise LLMError(f"Gemini API returned HTTP {res.status_code}")
 
         except (LLMAuthenticationError, LLMRateLimitError, LLMError, httpx.RequestError) as err:
-            logger.warning("Gemini API call failed (%s: %s).", type(err).__name__, str(err))
+            err_msg = str(err)
+            if self.api_key and self.api_key in err_msg:
+                err_msg = err_msg.replace(self.api_key, "[REDACTED_API_KEY]")
+            logger.warning("Gemini API call failed (%s: %s).", type(err).__name__, err_msg)
             if self.fallback_on_error:
                 logger.info("Executing graceful failover to DeterministicFallbackEngine.")
                 fallback_res = await self.fallback_engine.generate(
                     system_prompt, user_prompt, temperature, max_tokens
                 )
-                fallback_res.raw_error = f"{type(err).__name__}: {str(err)}"
+                fallback_res.raw_error = f"{type(err).__name__}: {err_msg}"
                 return fallback_res
+            if isinstance(err, httpx.RequestError):
+                raise LLMNetworkError(f"Gemini network failure: {err_msg}") from None
             raise
 
 

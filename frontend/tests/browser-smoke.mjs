@@ -314,10 +314,18 @@ async function runSmokeTest() {
 
     console.log("\n=== End-to-End Smoke Test: ALL VERIFICATIONS PASSED ===");
   } finally {
+    if (cdp && cdp.ws) {
+      try {
+        cdp.ws.close();
+      } catch {
+        // ignore
+      }
+    }
     if (chromeProc) {
       chromeProc.kill("SIGTERM");
     }
   }
+  process.exit(0);
 }
 
 runSmokeTest().catch((err) => {

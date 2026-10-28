@@ -355,11 +355,20 @@ Copy-Item .env.example .env
 ```
 
 #### Environment Configuration (`backend/.env`)
-By default, the backend runs in **offline deterministic mode** (`USE_MOCK_FALLBACK=true`), requiring zero API keys. To connect to Google Gemini:
+By default, the backend runs in **offline deterministic mode** (`LLM_PROVIDER=mock_fallback`), requiring zero external API keys. To connect to Google Gemini:
 ```ini
+# Application Configuration
 APP_NAME=IntelliFlow
 APP_ENV=development
 APP_DEBUG=true
+APP_VERSION=0.1.0
+
+# Server
+HOST=0.0.0.0
+PORT=8000
+
+# CORS Allowed Origins
+CORS_ORIGINS=["http://localhost:3000","http://127.0.0.1:3000"]
 
 # Database Persistence (Async SQLite)
 DATABASE_URL=sqlite+aiosqlite:///./intelliflow.db
@@ -367,14 +376,11 @@ DATABASE_URL=sqlite+aiosqlite:///./intelliflow.db
 # Execution Timeout (Seconds)
 EXECUTION_TIMEOUT_SECONDS=60
 
-# LLM Provider Configuration
-# Set USE_MOCK_FALLBACK=false and supply GEMINI_API_KEY for live inference
-USE_MOCK_FALLBACK=true
+# AI Model Provider Configuration
+# - Default: mock_fallback (deterministic offline heuristics; zero API keys required)
+# - Optional: gemini (requires setting GEMINI_API_KEY below)
+LLM_PROVIDER=mock_fallback
 GEMINI_API_KEY=
-GEMINI_MODEL=gemini-1.5-flash
-
-# CORS Allowed Origins
-CORS_ORIGINS=["http://localhost:3000","http://127.0.0.1:3000"]
 ```
 
 #### Start FastAPI Backend Server
@@ -383,6 +389,7 @@ CORS_ORIGINS=["http://localhost:3000","http://127.0.0.1:3000"]
 ```
 > API will be available at [http://127.0.0.1:8000](http://127.0.0.1:8000)
 > Interactive Swagger Documentation: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+> Operational Health Check: [http://127.0.0.1:8000/api/v1/health](http://127.0.0.1:8000/api/v1/health)
 
 ### Step 3: Frontend Setup (Separate PowerShell Window)
 ```powershell
@@ -395,6 +402,16 @@ npm install
 npm run dev
 ```
 > Web Workspace available at [http://localhost:3000](http://localhost:3000)
+
+### Step 4: Verify Health and Submit a Workflow
+1. **Health Verification:** Confirm the backend is responsive by querying `GET /api/v1/health`:
+   ```powershell
+   Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/v1/health"
+   ```
+2. **Access Workspace:** Open [http://localhost:3000](http://localhost:3000) in your web browser.
+3. **Submit a Task:** Enter a goal in the Command Workspace textarea or select an enterprise starter template (e.g. *"Enterprise AI Platforms & Orchestration"*), then click **Launch Workforce →** (`Ctrl+Enter`).
+4. **Observe Multi-Agent Pipeline:** Watch the sequential execution propagate live from Architect (Planner) through Validator (Reviewer) on the **Workflow Canvas** and **Activity Feed**.
+5. **Inspect Artifact & Truthful Verification:** Click **View Live Draft** to review the compiled 4-section report. Observe the amber status badge reading **"Execution Completed — Draft Unverified"**, truthfully distinguishing completed execution from external factual verification.
 
 ---
 

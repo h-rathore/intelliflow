@@ -35,7 +35,7 @@ The benchmark suite and end-to-end integration tests were executed on the follow
 
 ## 3. Dual-Provider Architecture Specification
 
-IntelliFlow implements a strict dual-provider abstraction layer (`app/services/llm.py`) providing two distinct execution modes:
+IntelliFlow implements a strict dual-provider abstraction layer (`app/services/llm/`) providing two distinct execution modes:
 
 ```mermaid
 flowchart TD

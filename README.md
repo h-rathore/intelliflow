@@ -42,11 +42,11 @@ IntelliFlow solves this by decomposing open-ended natural language goals into a 
 | Feature Domain | Implemented Capability | Current State | Verification Authority |
 | :--- | :--- | :--- | :--- |
 | **Multi-Agent Pipeline** | Sequential 5-agent coordination (`Planner` → `Researcher` → `Analyst` → `Writer` → `Reviewer`) | **Fully Implemented** | `backend/app/orchestration/engine.py` (100% test pass) |
-| **Asynchronous Engine** | Timeout handling (`asyncio.wait_for`), fault isolation, per-agent execution traces | **Fully Implemented** | `backend/tests/test_orchestration.py` (11 tests pass) |
-| **LLM Provider Layer** | Dual-mode: `DeterministicFallbackEngine` (offline) + `GeminiLLMClient` (Gemini 1.5 Flash) | **Fully Implemented** | `backend/tests/test_llm_provider.py` (7 tests pass) |
-| **Persistence Layer** | Async SQLite (`aiosqlite`, SQLAlchemy 2.0 Async), `WorkflowRecord` 1:1 `ArtifactRecord` | **Fully Implemented** | `backend/tests/test_persistence.py` (7 tests pass) |
+| **Asynchronous Engine** | Timeout handling (`asyncio.wait_for`), fault isolation, per-agent execution traces | **Fully Implemented** | `backend/tests/test_orchestration.py` (7 tests pass) |
+| **LLM Provider Layer** | Dual-mode: `DeterministicFallbackEngine` (offline) + `GeminiLLMClient` (Gemini 1.5 Flash) | **Fully Implemented** | `backend/tests/test_llm_provider.py` (8 tests pass) |
+| **Persistence Layer** | Async SQLite (`aiosqlite`, SQLAlchemy 2.0 Async), `WorkflowRecord` 1:1 `ArtifactRecord` | **Fully Implemented** | `backend/tests/test_persistence.py` (4 tests pass) |
 | **REST API Layer** | FastAPI v1 endpoints (`/workflows`, `/{id}`, `/{id}/artifacts`, `/health`), camelCase aliasing | **Fully Implemented** | `backend/tests/test_workflow_api.py` (12 tests pass) |
-| **Frontend Workspace** | Next.js 16 App Router, React 19, Tailwind CSS, live agent canvas, artifact reader | **Fully Implemented** | `frontend/tests/integration.test.mjs` (7 tests pass) |
+| **Frontend Workspace** | Next.js 16 App Router, React 19, Tailwind CSS, live agent canvas, artifact reader | **Fully Implemented** | `frontend/tests/integration.test.mjs` (10 tests pass) |
 | **Truth-Aware Status** | Amber warning badge for fallback drafts vs emerald certified badge for verified sections | **Fully Implemented** | `frontend/src/components/command/CommandWorkspace.tsx` |
 | **Performance Benchmark** | Monotonic wall-clock benchmark harness measuring latency percentiles (mean, median, p95) | **Fully Implemented** | `backend/tests/test_benchmarks.py` (8 tests pass) |
 | **External Web Scraping** | In-process domain heuristics / live Gemini synthesis; external headless browser crawling | *Simulated / In-Process* | Role specialty simulated in offline baseline |

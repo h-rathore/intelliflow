@@ -108,7 +108,7 @@ async function captureEvidence() {
     "--headless=new",
     "--remote-debugging-port=9222",
     `--user-data-dir=${userDir}`,
-    "--window-size=1280,900",
+    "--window-size=1440,960",
     "--no-first-run",
     "--disable-background-networking",
     FRONTEND_URL,
@@ -151,20 +151,44 @@ async function captureEvidence() {
     // ─────────────────────────────────────────────────────────────
     // SCREENSHOT 2: Workflow Execution / Topology Canvas
     // ─────────────────────────────────────────────────────────────
-    console.log("4. Submitting mission prompt...");
+    console.log("4. Submitting mission prompt via React input setter...");
     await cdp.eval(`
       (() => {
         const textarea = document.querySelector("textarea");
-        textarea.value = "Research enterprise AI automation platforms and evaluate multi-agent orchestration architectures.";
+        if (!textarea) throw new Error("Textarea not found");
+        const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
+        nativeSetter.call(textarea, "Research enterprise AI automation platforms and evaluate multi-agent orchestration architectures.");
         textarea.dispatchEvent(new Event("input", { bubbles: true }));
-        const form = document.querySelector("form");
-        form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+
+        const submitBtn = document.querySelector('button[type="submit"]');
+        if (!submitBtn) throw new Error("Submit button not found");
+        submitBtn.click();
       })()
     `);
 
     // Await API completion and animation
     console.log("   Waiting for multi-agent pipeline resolution...");
-    await sleep(3500);
+    for (let i = 0; i < 30; i++) {
+      await sleep(500);
+      const isComplete = await cdp.eval(`
+        (() => {
+          const text = document.body.innerText;
+          return text.includes("Execution Completed") || text.includes("Mission Completed");
+        })()
+      `);
+      if (isComplete) {
+        console.log("   [OK] Pipeline reached completion!");
+        break;
+      }
+    }
+    await sleep(1000);
+    await cdp.eval(`
+      (() => {
+        const well = document.querySelector(".if-well");
+        if (well) well.scrollTop = 0;
+      })()
+    `);
+    await sleep(300);
 
     console.log("5. Capturing Screenshot 2: Workflow Execution Topology...");
     await cdp.captureScreenshot(join(SCREENSHOT_DIR, "02_workflow_execution_topology.png"));
@@ -175,12 +199,21 @@ async function captureEvidence() {
     console.log("6. Opening Live Draft Artifact Viewer...");
     await cdp.eval(`
       (() => {
+        const well = document.querySelector(".if-well");
+        if (well) well.scrollTop = 0;
         const buttons = Array.from(document.querySelectorAll("button"));
         const draftBtn = buttons.find(b => b.textContent && b.textContent.includes("Live Draft"));
         if (draftBtn) draftBtn.click();
       })()
     `);
-    await sleep(1000);
+    await sleep(1500);
+    await cdp.eval(`
+      (() => {
+        const well = document.querySelector(".if-well");
+        if (well) well.scrollTop = 0;
+      })()
+    `);
+    await sleep(300);
 
     console.log("7. Capturing Screenshot 3: Generated Artifact & Verification Badge...");
     await cdp.captureScreenshot(join(SCREENSHOT_DIR, "03_artifact_and_verification_badge.png"));
@@ -205,13 +238,23 @@ async function captureEvidence() {
         window.__originalFetch = window.fetch;
         window.fetch = () => Promise.reject(new Error("Connection refused: backend service unreachable"));
         const textarea = document.querySelector("textarea");
-        textarea.value = "Analyze mission resilience under network partition failure";
+        if (!textarea) throw new Error("Textarea not found");
+        const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
+        nativeSetter.call(textarea, "Analyze mission resilience under network partition failure");
         textarea.dispatchEvent(new Event("input", { bubbles: true }));
-        const form = document.querySelector("form");
-        form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+
+        const submitBtn = document.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.click();
       })()
     `);
-    await sleep(1500);
+    await sleep(2000);
+    await cdp.eval(`
+      (() => {
+        const well = document.querySelector(".if-well");
+        if (well) well.scrollTop = 0;
+      })()
+    `);
+    await sleep(300);
 
     console.log("9. Capturing Screenshot 4: Failure State Handling...");
     await cdp.captureScreenshot(join(SCREENSHOT_DIR, "04_failure_state_handling.png"));

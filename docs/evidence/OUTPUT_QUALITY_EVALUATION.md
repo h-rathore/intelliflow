@@ -100,7 +100,12 @@ The `DeterministicFallbackEngine` was evaluated against all four benchmark domai
 | **3. Internal Coherence** | 4.0 / 5 | 80% | Good; consistent narrative and logical progression across sections. |
 | **4. Evidence Traceability** | 2.0 / 5 | 40% | Marginal; references are synthetic placeholders (truthfully disclosed). |
 | **5. Verification State Integrity** | 5.0 / 5 | 100% | Exemplary; infallible prevention of false certification badges. |
-| **Overall Engine Score** | **3.8 / 5** | **76%** | **Robust, hermetic baseline for offline evaluation & testing.** |
+| **Overall Engine Score** | **3.8 / 5** | **76%** | **Rubric-based fallback draft-quality result (structural & contract compliance).** |
+
+> [!IMPORTANT]
+> **Score Provenance & Scientific Interpretation:**
+> The **3.8 / 5.0 (76%)** overall score is strictly a **rubric-based fallback draft-quality result** evaluating structural completeness, contract adherence, internal coherence, and truthful verification state labeling under offline heuristic generation.
+> It does **NOT** represent, and must not be cited as, frontier model cognitive reasoning accuracy, real-world factual correctness, or empirical model precision.
 
 ---
 
@@ -120,7 +125,7 @@ When live Google Gemini inference is enabled via `GEMINI_API_KEY`:
 ```
 > [!NOTE]
 > In accordance with strict capstone integrity rules, **no fabricated live LLM benchmark scores or hallucinated qualitative outputs are reported here**.
-> While the integration with the `google-genai` SDK is fully implemented and tested via mock unit tests (`test_llm_client.py`), live production benchmarking with an enterprise Gemini quota is scheduled for the Day 3 deployment sprint.
+> While the integration with the `google-genai` SDK is fully implemented and tested via mock unit tests (`test_llm_provider.py`), live production benchmarking with an enterprise Gemini quota is scheduled for the Day 3 deployment sprint.
 
 ---
 

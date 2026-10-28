@@ -130,17 +130,16 @@ All unit, integration, API, and end-to-end regression tests pass with a **100% s
 
 | Test Layer | Test Suite Location | Test Count | Status | Description |
 | :--- | :--- | :---: | :---: | :--- |
-| **Backend REST API** | `backend/tests/test_workflow_api.py` | 10 | **PASS** | Validates CRUD endpoints, 404 handling, and input validation. |
-| **Backend Orchestration** | `backend/tests/test_engine.py` | 8 | **PASS** | Tests state machine transitions, agent pipeline, and persistence. |
-| **Database & Health** | `backend/tests/test_health_db.py` | 7 | **PASS** | Tests health check, schema constraints, and SQLite cascades. |
-| **Agent Implementations** | `backend/tests/test_agents.py` | 10 | **PASS** | Validates individual agent contracts and output structures. |
-| **LLM Provider Client** | `backend/tests/test_llm_client.py` | 8 | **PASS** | Tests fallback routing, Gemini mock responses, and error trapping. |
-| **Benchmark Suite** | `backend/tests/test_benchmarks.py` | 8 | **PASS** | Validates benchmark runner CLI, statistics, and JSON export. |
-| **Reliability & Faults** | `backend/tests/test_workflow_reliability.py` | 8 | **PASS** | Tests agent exceptions, malformed sections, and database rollbacks. |
-| **Frontend State & Hook** | `frontend/tests/useWorkflowRunner.test.mjs` | 6 | **PASS** | Tests polling state machine, retry logic, and error handlers. |
-| **Frontend Truth Badge** | `frontend/tests/evidence-badge.test.mjs` | 4 | **PASS** | Tests truth-aware verification badge distinction logic. |
-| **Automated E2E Smoke** | `frontend/tests/browser-smoke.mjs` | 1 | **PASS** | Automated Chrome DevTools browser-to-backend smoke test. |
-| **Total Test Count** | **10 Test Suites** | **70 Tests** | **100% PASS** | **Zero failures, zero flakes, zero unhandled errors.** |
+| **Backend Acceptance & Reliability** | `backend/tests/test_acceptance_reliability.py` | 11 | **PASS** | Validates prompt boundaries, unhandled exceptions, malformed sections, key masking, and ID uniqueness. |
+| **Backend Agent Contracts** | `backend/tests/test_agents.py` | 9 | **PASS** | Validates individual agent contracts, role specialization, and snapshot generation. |
+| **Backend Benchmark Suite** | `backend/tests/test_benchmarks.py` | 8 | **PASS** | Validates benchmark CLI, statistics calculation, percentile linear interpolation, and JSON export. |
+| **Backend LLM Provider** | `backend/tests/test_llm_provider.py` | 8 | **PASS** | Tests deterministic fallback routing, Gemini mock success, network error failover, and credential checks. |
+| **Backend Orchestration Engine** | `backend/tests/test_orchestration.py` | 7 | **PASS** | Tests 5-agent sequential order, context propagation, execution timeouts, and stage failure halting. |
+| **Backend Persistence Layer** | `backend/tests/test_persistence.py` | 4 | **PASS** | Tests async SQLite initialization, workflow creation, 1:1 artifact foreign key cascade deletion. |
+| **Backend REST API** | `backend/tests/test_workflow_api.py` | 12 | **PASS** | Validates health, CRUD endpoints, 404/422 responses, CORS headers, and fallback status retention. |
+| **Frontend Integration Suite** | `frontend/tests/integration.test.mjs` | 10 | **PASS** | Native Node.js test runner; validates typed API mapping, error parsing, agent transitions, and truth badge logic. |
+| **Automated E2E Browser Smoke** | `frontend/tests/browser-smoke.mjs` | 1 | **PASS** | Standalone headless Chrome CDP test verifying hydration, empty prompt guard, task execution, and draft viewer. |
+| **Total Automated Test Inventory** | **7 Backend + 1 Frontend + 1 E2E** | **70 Tests** | **100% PASS** | **69 unit/integration test cases + 1 browser smoke test; zero failures, zero flakes.** |
 
 ### 5.2 Formal Validation Matrix
 A complete traceability matrix mapping all 41 test scenarios across 7 functional categories is recorded in:
@@ -185,7 +184,7 @@ A key contribution of the IntelliFlow platform is **truthful verification signal
 - The UI and backend contracts were hardened to inspect both workflow status and artifact verification status:
   - If a workflow completes via fallback or without factual verification, the UI displays an amber **`Execution Completed — Draft Unverified`** badge.
   - The green **`Execution Certified`** badge is rendered *only* when the `Reviewer` agent has verified empirical citations and granted explicit approval.
-- Verified by unit tests in `frontend/tests/evidence-badge.test.mjs` and screenshot [`03_artifact_and_verification_badge.png`](file:///c:/Users/Harsh%20rathore/intelliflow/docs/evidence/screenshots/03_artifact_and_verification_badge.png).
+- Verified by unit tests in `frontend/tests/integration.test.mjs` (Subtest 7) and screenshot [`03_artifact_and_verification_badge.png`](file:///c:/Users/Harsh%20rathore/intelliflow/docs/evidence/screenshots/03_artifact_and_verification_badge.png).
 
 ---
 

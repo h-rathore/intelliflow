@@ -1,0 +1,363 @@
+{
+  "benchmark_version": "0.1.0",
+  "metadata": {
+    "python_version": "3.12.0",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "git_revision": "6beebe7a0d238190d5a345f972f805a41b7c48ca",
+    "timestamp_utc": "2026-10-28T07:38:05.430629+00:00"
+  },
+  "config": {
+    "provider": "mock_fallback",
+    "is_fallback": true,
+    "iterations_per_prompt": 2,
+    "prompts_count": 4,
+    "total_runs": 8,
+    "persist_to_db": false,
+    "timeout_seconds": 60
+  },
+  "summary": {
+    "total_runs": 8,
+    "successful_runs": 8,
+    "failed_runs": 0,
+    "success_rate_percent": 100.0,
+    "latency": {
+      "count": 8,
+      "mean_seconds": 0.0009,
+      "median_seconds": 0.0006,
+      "min_seconds": 0.0006,
+      "max_seconds": 0.0017,
+      "p95_seconds": 0.0016
+    },
+    "tokens": {
+      "total_tokens_sum": 11872,
+      "mean_tokens": 1484.0,
+      "median_tokens": 1483.5,
+      "min_tokens": 1474,
+      "max_tokens": 1495,
+      "token_accounting_note": "This benchmark was executed using the local DeterministicFallbackEngine (mock_fallback). Reported token counts are heuristic word-length estimates and do NOT reflect Google Gemini API tokens, billing units, or live web research. All outputs are synthetic draft artifacts."
+    }
+  },
+  "runs": [
+    {
+      "run_id": "bench-p1-i1-1",
+      "iteration": 1,
+      "prompt": "Research the top enterprise AI automation platforms and prepare a competitive analysis.",
+      "status": "completed",
+      "duration_seconds": 0.0017,
+      "provider": "mock_fallback",
+      "is_fallback": true,
+      "total_tokens": 1476,
+      "confidence_score": 75.0,
+      "active_stage": "Mission Completed",
+      "agent_metrics": {
+        "planner": {
+          "latency_ms": 0,
+          "tokens_processed": 325,
+          "state": "completed"
+        },
+        "researcher": {
+          "latency_ms": 0,
+          "tokens_processed": 297,
+          "state": "completed"
+        },
+        "analyst": {
+          "latency_ms": 0,
+          "tokens_processed": 238,
+          "state": "completed"
+        },
+        "writer": {
+          "latency_ms": 0,
+          "tokens_processed": 455,
+          "state": "completed"
+        },
+        "reviewer": {
+          "latency_ms": 0,
+          "tokens_processed": 161,
+          "state": "completed"
+        }
+      },
+      "error": null
+    },
+    {
+      "run_id": "bench-p1-i2-2",
+      "iteration": 2,
+      "prompt": "Research the top enterprise AI automation platforms and prepare a competitive analysis.",
+      "status": "completed",
+      "duration_seconds": 0.0008,
+      "provider": "mock_fallback",
+      "is_fallback": true,
+      "total_tokens": 1476,
+      "confidence_score": 75.0,
+      "active_stage": "Mission Completed",
+      "agent_metrics": {
+        "planner": {
+          "latency_ms": 0,
+          "tokens_processed": 325,
+          "state": "completed"
+        },
+        "researcher": {
+          "latency_ms": 0,
+          "tokens_processed": 297,
+          "state": "completed"
+        },
+        "analyst": {
+          "latency_ms": 0,
+          "tokens_processed": 238,
+          "state": "completed"
+        },
+        "writer": {
+          "latency_ms": 0,
+          "tokens_processed": 455,
+          "state": "completed"
+        },
+        "reviewer": {
+          "latency_ms": 0,
+          "tokens_processed": 161,
+          "state": "completed"
+        }
+      },
+      "error": null
+    },
+    {
+      "run_id": "bench-p2-i1-3",
+      "iteration": 1,
+      "prompt": "Audit pull request diffs, execute static AST linters, and generate pytest regression suites.",
+      "status": "completed",
+      "duration_seconds": 0.0014,
+      "provider": "mock_fallback",
+      "is_fallback": true,
+      "total_tokens": 1474,
+      "confidence_score": 100.0,
+      "active_stage": "Mission Completed",
+      "agent_metrics": {
+        "planner": {
+          "latency_ms": 0,
+          "tokens_processed": 321,
+          "state": "completed"
+        },
+        "researcher": {
+          "latency_ms": 0,
+          "tokens_processed": 298,
+          "state": "completed"
+        },
+        "analyst": {
+          "latency_ms": 0,
+          "tokens_processed": 237,
+          "state": "completed"
+        },
+        "writer": {
+          "latency_ms": 0,
+          "tokens_processed": 456,
+          "state": "completed"
+        },
+        "reviewer": {
+          "latency_ms": 0,
+          "tokens_processed": 162,
+          "state": "completed"
+        }
+      },
+      "error": null
+    },
+    {
+      "run_id": "bench-p2-i2-4",
+      "iteration": 2,
+      "prompt": "Audit pull request diffs, execute static AST linters, and generate pytest regression suites.",
+      "status": "completed",
+      "duration_seconds": 0.0007,
+      "provider": "mock_fallback",
+      "is_fallback": true,
+      "total_tokens": 1474,
+      "confidence_score": 100.0,
+      "active_stage": "Mission Completed",
+      "agent_metrics": {
+        "planner": {
+          "latency_ms": 0,
+          "tokens_processed": 321,
+          "state": "completed"
+        },
+        "researcher": {
+          "latency_ms": 0,
+          "tokens_processed": 298,
+          "state": "completed"
+        },
+        "analyst": {
+          "latency_ms": 0,
+          "tokens_processed": 237,
+          "state": "completed"
+        },
+        "writer": {
+          "latency_ms": 0,
+          "tokens_processed": 456,
+          "state": "completed"
+        },
+        "reviewer": {
+          "latency_ms": 0,
+          "tokens_processed": 162,
+          "state": "completed"
+        }
+      },
+      "error": null
+    },
+    {
+      "run_id": "bench-p3-i1-5",
+      "iteration": 1,
+      "prompt": "Ingest multi-page corporate balance sheets, extract GAAP tables, and run verification equations.",
+      "status": "completed",
+      "duration_seconds": 0.0006,
+      "provider": "mock_fallback",
+      "is_fallback": true,
+      "total_tokens": 1495,
+      "confidence_score": 75.0,
+      "active_stage": "Mission Completed",
+      "agent_metrics": {
+        "planner": {
+          "latency_ms": 0,
+          "tokens_processed": 327,
+          "state": "completed"
+        },
+        "researcher": {
+          "latency_ms": 0,
+          "tokens_processed": 302,
+          "state": "completed"
+        },
+        "analyst": {
+          "latency_ms": 0,
+          "tokens_processed": 241,
+          "state": "completed"
+        },
+        "writer": {
+          "latency_ms": 0,
+          "tokens_processed": 460,
+          "state": "completed"
+        },
+        "reviewer": {
+          "latency_ms": 0,
+          "tokens_processed": 165,
+          "state": "completed"
+        }
+      },
+      "error": null
+    },
+    {
+      "run_id": "bench-p3-i2-6",
+      "iteration": 2,
+      "prompt": "Ingest multi-page corporate balance sheets, extract GAAP tables, and run verification equations.",
+      "status": "completed",
+      "duration_seconds": 0.0006,
+      "provider": "mock_fallback",
+      "is_fallback": true,
+      "total_tokens": 1495,
+      "confidence_score": 75.0,
+      "active_stage": "Mission Completed",
+      "agent_metrics": {
+        "planner": {
+          "latency_ms": 0,
+          "tokens_processed": 327,
+          "state": "completed"
+        },
+        "researcher": {
+          "latency_ms": 0,
+          "tokens_processed": 302,
+          "state": "completed"
+        },
+        "analyst": {
+          "latency_ms": 0,
+          "tokens_processed": 241,
+          "state": "completed"
+        },
+        "writer": {
+          "latency_ms": 0,
+          "tokens_processed": 460,
+          "state": "completed"
+        },
+        "reviewer": {
+          "latency_ms": 0,
+          "tokens_processed": 165,
+          "state": "completed"
+        }
+      },
+      "error": null
+    },
+    {
+      "run_id": "bench-p4-i1-7",
+      "iteration": 1,
+      "prompt": "Evaluate customer support tickets, score urgency, and dispatch CRM alerts to engineers.",
+      "status": "completed",
+      "duration_seconds": 0.0006,
+      "provider": "mock_fallback",
+      "is_fallback": true,
+      "total_tokens": 1491,
+      "confidence_score": 75.0,
+      "active_stage": "Mission Completed",
+      "agent_metrics": {
+        "planner": {
+          "latency_ms": 0,
+          "tokens_processed": 326,
+          "state": "completed"
+        },
+        "researcher": {
+          "latency_ms": 0,
+          "tokens_processed": 301,
+          "state": "completed"
+        },
+        "analyst": {
+          "latency_ms": 0,
+          "tokens_processed": 241,
+          "state": "completed"
+        },
+        "writer": {
+          "latency_ms": 0,
+          "tokens_processed": 459,
+          "state": "completed"
+        },
+        "reviewer": {
+          "latency_ms": 0,
+          "tokens_processed": 164,
+          "state": "completed"
+        }
+      },
+      "error": null
+    },
+    {
+      "run_id": "bench-p4-i2-8",
+      "iteration": 2,
+      "prompt": "Evaluate customer support tickets, score urgency, and dispatch CRM alerts to engineers.",
+      "status": "completed",
+      "duration_seconds": 0.0006,
+      "provider": "mock_fallback",
+      "is_fallback": true,
+      "total_tokens": 1491,
+      "confidence_score": 75.0,
+      "active_stage": "Mission Completed",
+      "agent_metrics": {
+        "planner": {
+          "latency_ms": 0,
+          "tokens_processed": 326,
+          "state": "completed"
+        },
+        "researcher": {
+          "latency_ms": 0,
+          "tokens_processed": 301,
+          "state": "completed"
+        },
+        "analyst": {
+          "latency_ms": 0,
+          "tokens_processed": 241,
+          "state": "completed"
+        },
+        "writer": {
+          "latency_ms": 0,
+          "tokens_processed": 459,
+          "state": "completed"
+        },
+        "reviewer": {
+          "latency_ms": 0,
+          "tokens_processed": 164,
+          "state": "completed"
+        }
+      },
+      "error": null
+    }
+  ],
+  "provenance_disclaimer": "This benchmark was executed using the local DeterministicFallbackEngine (mock_fallback). Reported token counts are heuristic word-length estimates and do NOT reflect Google Gemini API tokens, billing units, or live web research. All outputs are synthetic draft artifacts."
+}
